@@ -61,14 +61,110 @@ python generate.py \
 
 ## Colab (Free T4)
 
-Open `colab.ipynb`. Change runtime to **T4 GPU**, then run cells top to bottom:
+> **Runtime**: Runtime → Change runtime type → **T4 GPU**
 
-1. Clone repo + install deps
-2. Upload your dataset as a zip
-3. Tokenize
-4. Train (~30-60 min for 2000 steps)
-5. Generate
-6. Listen + download
+### Step 1 — Clone & install
+
+```python
+!git clone https://github.com/Aryan9403/soundpaint.git
+%cd soundpaint
+!pip install -q torch descript-audio-codec audiotools librosa soundfile numpy pyyaml tqdm
+!pip install -q mamba_ssm causal-conv1d
+```
+
+### Step 2 — Upload dataset
+
+Zip your `dataset/` folder locally, then upload it:
+
+```python
+from google.colab import files
+import zipfile
+
+uploaded = files.upload()          # select dataset.zip
+with zipfile.ZipFile('dataset.zip', 'r') as z:
+    z.extractall('.')
+```
+
+Or use the notebook's Cell 2 which does this automatically.
+
+### Step 3 — Tokenize
+
+```python
+!python data/prepare.py \
+    --audio_dir dataset/ \
+    --output_dir data/tokens_small \
+    --device cuda \
+    --duration 30
+```
+
+Takes ~2-5 minutes for 240 files on T4.
+
+### Step 4 — Train
+
+```python
+!python train.py --config configs/tiny.yaml
+```
+
+- ~30-60 min for 2000 steps on T4
+- Val loss printed every 200 steps
+- A 10s audio sample is auto-generated and saved to `samples/tiny/` every 200 steps — no need to run generate separately during training
+- Checkpoints saved to `checkpoints/tiny/` every 500 steps
+- To resume after a Colab disconnect: `!python train.py --config configs/tiny.yaml --resume checkpoints/tiny/step_001000.pt`
+
+### Step 5 — Generate audio
+
+After training, generate a clip from scratch:
+
+```python
+!python generate.py \
+    --checkpoint checkpoints/tiny/best.pt \
+    --duration 10 \
+    --output output.wav \
+    --temperature 0.95 \
+    --top_k 250
+```
+
+Options:
+- `--duration` — length of clip in seconds
+- `--temperature` — higher = more random (try 0.8–1.2)
+- `--top_k` — sampling pool size (try 100–500)
+
+### Step 6 — Listen & download
+
+```python
+from IPython.display import Audio, display
+from google.colab import files
+
+display(Audio('output.wav'))
+files.download('output.wav')
+```
+
+You can also listen to the mid-training samples:
+
+```python
+import glob
+samples = sorted(glob.glob('samples/tiny/*.wav'))
+display(Audio(samples[-1]))   # most recent sample
+```
+
+### Saving checkpoints before Colab disconnects
+
+Download your checkpoint so you don't lose progress:
+
+```python
+from google.colab import files
+files.download('checkpoints/tiny/best.pt')
+```
+
+To resume from a downloaded checkpoint next session, re-upload it:
+
+```python
+from google.colab import files
+uploaded = files.upload()   # select best.pt
+!mkdir -p checkpoints/tiny
+!mv best.pt checkpoints/tiny/best.pt
+!python train.py --config configs/tiny.yaml --resume checkpoints/tiny/best.pt
+```
 
 ---
 
