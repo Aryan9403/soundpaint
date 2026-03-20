@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Data artifacts
+data/tokens_small/
+data/tokens/
+checkpoints/
+samples/
+
+# Generated audio
+*.wav
+output.wav
+test_roundtrip.wav
+
+# DAC model cache
+~/.cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db

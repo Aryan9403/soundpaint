@@ -1,0 +1,41 @@
+# Tiny config for Colab T4 (free tier)
+name: tiny
+
+# Model
+d_model: 256
+n_layers: 4
+vocab_size: 1028        # 1024 codebook + 4 special tokens (PAD=1024, BOS=1025, EOS=1026, UNK=1027)
+pad_token_id: 1024
+bos_token_id: 1025
+eos_token_id: 1026
+seq_len: 2580           # 30s @ 86 tokens/sec (DAC 44kHz)
+
+# Data
+sample_rate: 44100
+duration: 30            # seconds per clip
+token_dir: data/tokens_small
+num_workers: 2
+pin_memory: true
+
+# Training
+batch_size: 4
+max_steps: 2000
+learning_rate: 3.0e-4
+weight_decay: 0.1
+grad_clip: 1.0
+warmup_steps: 100
+fp16: true
+
+# Scheduler
+scheduler: cosine       # linear warmup + cosine decay
+
+# Eval & checkpointing
+eval_every: 200
+save_every: 500
+val_split: 0.05
+seed: 42
+
+# Output
+checkpoint_dir: checkpoints/tiny
+generate_dir: samples/tiny
+generate_duration: 10   # seconds of audio to generate during eval

@@ -1,0 +1,10 @@
+torch>=2.0.0
+descript-audio-codec
+audiotools
+mamba_ssm
+causal-conv1d
+librosa
+soundfile
+numpy
+pyyaml
+tqdm

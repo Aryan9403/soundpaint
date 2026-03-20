@@ -1,0 +1,41 @@
+# Full model config for GCP A100 (placeholder)
+name: default
+
+# Model
+d_model: 1024
+n_layers: 24
+vocab_size: 1028        # 1024 codebook + 4 special tokens
+pad_token_id: 1024
+bos_token_id: 1025
+eos_token_id: 1026
+seq_len: 8192           # ~95s @ 86 tokens/sec
+
+# Data
+sample_rate: 44100
+duration: 95
+token_dir: data/tokens
+num_workers: 8
+pin_memory: true
+
+# Training
+batch_size: 32
+max_steps: 100000
+learning_rate: 1.0e-4
+weight_decay: 0.1
+grad_clip: 1.0
+warmup_steps: 2000
+fp16: true
+
+# Scheduler
+scheduler: cosine
+
+# Eval & checkpointing
+eval_every: 1000
+save_every: 5000
+val_split: 0.05
+seed: 42
+
+# Output
+checkpoint_dir: checkpoints/default
+generate_dir: samples/default
+generate_duration: 30
