@@ -68,7 +68,8 @@ python generate.py \
 ```python
 !git clone https://github.com/Aryan9403/soundpaint.git
 %cd soundpaint
-!pip install -q torch descript-audio-codec audiotools librosa soundfile numpy pyyaml tqdm
+!pip install -q torch descript-audio-codec librosa soundfile numpy pyyaml tqdm
+!pip install -q git+https://github.com/descriptinc/audiotools
 !pip install -q mamba_ssm causal-conv1d
 ```
 
