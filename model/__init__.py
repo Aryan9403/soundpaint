@@ -1,3 +1,3 @@
-from model.mamba_lm import MusicMambaLM
+from model.lm import MusicLM
 
-__all__ = ["MusicMambaLM"]
+__all__ = ["MusicLM"]

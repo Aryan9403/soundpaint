@@ -17,7 +17,7 @@ from torch.cuda.amp import GradScaler, autocast
 from tqdm import tqdm
 
 from data.dataloader import get_dataloaders
-from model.mamba_lm import MusicMambaLM
+from model.lm import MusicLM
 from model.utils import count_parameters, load_config
 
 
@@ -135,7 +135,7 @@ def main():
     train_loader, val_loader = get_dataloaders(config)
 
     # Model
-    model = MusicMambaLM(config).to(device)
+    model = MusicLM(config).to(device)
     n_params = count_parameters(model)
     print(f"Model params: {n_params:,} ({n_params/1e6:.1f}M)")
 

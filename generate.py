@@ -12,7 +12,7 @@ from pathlib import Path
 import torch
 import soundfile as sf
 
-from model.mamba_lm import MusicMambaLM
+from model.lm import MusicLM
 
 
 def parse_args():
@@ -66,7 +66,7 @@ def main():
     print(f"Config: {config['name']} | d_model={config['d_model']} | n_layers={config['n_layers']}")
 
     # Build model and load weights
-    model = MusicMambaLM(config).to(device)
+    model = MusicLM(config).to(device)
     model.load_state_dict(ckpt["model_state_dict"])
     model.eval()
     print(f"Model loaded from step {ckpt.get('step', '?')}")

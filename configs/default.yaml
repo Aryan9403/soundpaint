@@ -4,6 +4,8 @@ name: default
 # Model
 d_model: 1024
 n_layers: 24
+n_heads: 16
+dropout: 0.1
 vocab_size: 1028        # 1024 codebook + 4 special tokens
 pad_token_id: 1024
 bos_token_id: 1025

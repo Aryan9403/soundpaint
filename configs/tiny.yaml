@@ -4,6 +4,8 @@ name: tiny
 # Model
 d_model: 256
 n_layers: 4
+n_heads: 8
+dropout: 0.1
 vocab_size: 1028        # 1024 codebook + 4 special tokens (PAD=1024, BOS=1025, EOS=1026, UNK=1027)
 pad_token_id: 1024
 bos_token_id: 1025

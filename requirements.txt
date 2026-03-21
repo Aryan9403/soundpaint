@@ -1,8 +1,6 @@
 torch>=2.0.0
 descript-audio-codec
 git+https://github.com/descriptinc/audiotools
-mamba_ssm
-causal-conv1d
 librosa
 soundfile
 numpy

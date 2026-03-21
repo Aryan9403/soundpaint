@@ -12,7 +12,7 @@ Music generation using a Mamba language model trained on DAC audio tokens.
 pip install -r requirements.txt
 ```
 
-> `mamba_ssm` requires CUDA. On a CPU-only machine it will fail to install — use Colab instead.
+> All dependencies are pure Python/PyTorch — no CUDA kernel compilation required.
 
 ---
 
@@ -70,7 +70,6 @@ python generate.py \
 %cd soundpaint
 !pip install -q torch descript-audio-codec librosa soundfile numpy pyyaml tqdm
 !pip install -q git+https://github.com/descriptinc/audiotools
-!pip install -q mamba_ssm causal-conv1d
 ```
 
 ### Step 2 — Upload dataset
@@ -193,6 +192,6 @@ python scripts/test_roundtrip.py
 ## Architecture
 
 - **Codec**: [Descript Audio Codec](https://github.com/descriptinc/descript-audio-codec) 44kHz, codebook 0 only
-- **Model**: Mamba SSM blocks (`mamba_ssm`), no attention
+- **Model**: Causal Transformer (pure PyTorch `nn.MultiheadAttention`, no external deps)
 - **Vocab**: 1028 tokens (1024 DAC + PAD/BOS/EOS/UNK)
 - **Sequence length**: 2580 tokens = 30 seconds
