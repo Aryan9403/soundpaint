@@ -83,7 +83,7 @@ def generate_sample(model, config, device, duration_sec: float) -> torch.Tensor:
         top_k=250,
         eos_token_id=eos,
     )
-    return generated[0]  # (T,)
+    return generated[0, 1:]  # strip BOS → (T,)
 
 
 def decode_and_save(tokens: torch.Tensor, out_path: str, device: str):
@@ -101,7 +101,7 @@ def decode_and_save(tokens: torch.Tensor, out_path: str, device: str):
 
     # Build full codebook tensor: codebook 0 = generated, rest = 0 (silence)
     codes = torch.zeros(1, n_codebooks, L, dtype=torch.long, device=device)
-    codes[0, 0, :] = tokens.to(device)
+    codes[0, 0, :] = tokens.clamp(0, 1023).to(device)
 
     with torch.no_grad():
         z = dac_model.quantizer.from_codes(codes)[0]   # (1, d_model, L)

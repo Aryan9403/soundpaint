@@ -19,7 +19,9 @@ class AudioTokenDataset(Dataset):
         input_ids  = tokens[:-1]   shape (seq_len,)
         target_ids = tokens[1:]    shape (seq_len,)
 
-    Sequences are truncated or right-padded with pad_token_id to seq_len.
+    On each __getitem__ call a random window of seq_len+1 tokens is sampled
+    from the full sequence, providing data diversity across epochs.
+    Sequences shorter than seq_len+1 are right-padded with pad_token_id.
     """
 
     def __init__(
@@ -39,26 +41,28 @@ class AudioTokenDataset(Dataset):
         self.data = []
         for f in pt_files:
             tokens = torch.load(f, weights_only=True)  # (L,)
-            tokens = self._pad_or_truncate(tokens)
-            self.data.append(tokens)
+            self.data.append(tokens)  # store full length
 
         print(f"Loaded {len(self.data)} token sequences from {token_dir}")
-
-    def _pad_or_truncate(self, tokens: torch.Tensor) -> torch.Tensor:
-        """Ensure tokens has length seq_len + 1 (we slice for input/target)."""
-        target_len = self.seq_len + 1
-        L = tokens.shape[0]
-        if L >= target_len:
-            return tokens[:target_len]
-        else:
-            pad = torch.full((target_len - L,), self.pad_token_id, dtype=torch.long)
-            return torch.cat([tokens, pad])
 
     def __len__(self) -> int:
         return len(self.data)
 
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
-        tokens = self.data[idx]  # (seq_len + 1,)
+        tokens = self.data[idx]  # full length
+        L = tokens.shape[0]
+        target_len = self.seq_len + 1
+
+        if L <= target_len:
+            # pad if needed
+            if L < target_len:
+                pad = torch.full((target_len - L,), self.pad_token_id, dtype=torch.long)
+                tokens = torch.cat([tokens, pad])
+        else:
+            # random start within valid range
+            start = torch.randint(0, L - target_len, (1,)).item()
+            tokens = tokens[start : start + target_len]
+
         input_ids = tokens[:-1]   # (seq_len,)
         target_ids = tokens[1:]   # (seq_len,)
         return input_ids, target_ids
